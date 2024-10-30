@@ -2,6 +2,7 @@ import sqlite3
 from datetime import datetime
 import os
 
+# Configuration
 DATABASE_FILE = 'blog_database.db'
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 
@@ -9,18 +10,20 @@ UPLOAD_FOLDER = os.path.join('static', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 
+# Database Connection
 def get_db_connection():
-    """Create a database connection and return the connection object"""
+    """Create a database connection that allows accessing columns by name"""
     conn = sqlite3.connect(DATABASE_FILE)
-    conn.row_factory = sqlite3.Row  # This allows accessing columns by name
+    conn.row_factory = sqlite3.Row
     return conn
 
 
+# Database Setup
 def init_db():
-    """Initialize the database by creating tables"""
+    """Create the database tables if they don't exist"""
     conn = get_db_connection()
 
-    # Create posts table with media support
+    # Posts table: stores blog post content
     conn.execute('''
         CREATE TABLE IF NOT EXISTS posts (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -30,7 +33,7 @@ def init_db():
         )
     ''')
 
-    # Create media table to track uploads
+    # Media table: tracks files associated with posts
     conn.execute('''
         CREATE TABLE IF NOT EXISTS media (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,10 +50,9 @@ def init_db():
 
 
 def seed_sample_data():
-    """Add sample blog posts to the database"""
+    """Add example blog posts to get started"""
     conn = get_db_connection()
 
-    # Sample blog posts
     sample_posts = [
         (
             "My First Blog Post",
@@ -69,75 +71,21 @@ def seed_sample_data():
         )
     ]
 
-    # Insert sample posts
     conn.executemany(
         'INSERT INTO posts (title, content, created_at) VALUES (?, ?, ?)',
         sample_posts
     )
-
     conn.commit()
     conn.close()
 
 
-# Media operations
-def add_media(post_id, filename, media_type):
-    """Add a media file record to the database"""
-    conn = get_db_connection()
-    conn.execute('''
-        INSERT INTO media (post_id, filename, media_type)
-        VALUES (?, ?, ?)
-    ''', (post_id, filename, media_type))
-    conn.commit()
-    conn.close()
-
-
-def delete_media(media_id):
-    """Delete a specific media file and its record"""
-    conn = get_db_connection()
-
-    # First get the filename to delete the actual file
-    media = conn.execute('SELECT filename FROM media WHERE id = ?', (media_id,)).fetchone()
-
-    if media:
-        # Delete the database record
-        conn.execute('DELETE FROM media WHERE id = ?', (media_id,))
-        conn.commit()
-
-        # Delete the actual file
-        file_path = os.path.join(UPLOAD_FOLDER, media['filename'])
-        if os.path.exists(file_path):
-            os.remove(file_path)
-
-    conn.close()
-
-
-def get_post_media(post_id):
-    """Get all media files for a specific post"""
-    conn = get_db_connection()
-    media = conn.execute('''
-        SELECT * FROM media
-        WHERE post_id = ?
-        ORDER BY created_at
-    ''', (post_id,)).fetchall()
-    conn.close()
-    return media
-
-
-def delete_post_media(post_id):
-    """Delete all media records for a post"""
-    conn = get_db_connection()
-    conn.execute('DELETE FROM media WHERE post_id = ?', (post_id,))
-    conn.commit()
-    conn.close()
-
-
-# Existing database operations
+# Post Operations
 def get_all_posts():
-    """Retrieve all blog posts, ordered by creation date (newest first)"""
+    """Get all posts with their media, newest first"""
     conn = get_db_connection()
     posts = conn.execute('SELECT * FROM posts ORDER BY created_at DESC').fetchall()
 
-    # Get media for each post
+    # Add media to each post
     for post in posts:
         post = dict(post)
         post['media'] = get_post_media(post['id'])
@@ -147,7 +95,7 @@ def get_all_posts():
 
 
 def get_post(post_id):
-    """Retrieve a specific post by its ID"""
+    """Get a single post and its media by ID"""
     conn = get_db_connection()
     post = conn.execute('SELECT * FROM posts WHERE id = ?', (post_id,)).fetchone()
 
@@ -160,7 +108,7 @@ def get_post(post_id):
 
 
 def create_post(title, content):
-    """Create a new blog post"""
+    """Create a new post and return its ID"""
     conn = get_db_connection()
     cursor = conn.execute('INSERT INTO posts (title, content) VALUES (?, ?)',
                           (title, content))
@@ -171,7 +119,7 @@ def create_post(title, content):
 
 
 def update_post(post_id, title, content):
-    """Update an existing blog post"""
+    """Update a post's title and content"""
     conn = get_db_connection()
     conn.execute('UPDATE posts SET title = ?, content = ? WHERE id = ?',
                  (title, content, post_id))
@@ -180,23 +128,68 @@ def update_post(post_id, title, content):
 
 
 def delete_post(post_id):
-    """Delete a blog post and its media"""
-    # First, get all media to delete files
+    """Delete a post and all its associated media"""
+    # Get media files before deleting the post
     media_files = get_post_media(post_id)
 
-    # Delete the post (will cascade delete media records)
+    # Delete post (cascades to media table)
     conn = get_db_connection()
     conn.execute('DELETE FROM posts WHERE id = ?', (post_id,))
     conn.commit()
     conn.close()
 
-    # Delete actual files
+    # Clean up media files from storage
     for media in media_files:
         file_path = os.path.join(UPLOAD_FOLDER, media['filename'])
         if os.path.exists(file_path):
             os.remove(file_path)
 
 
+# Media Operations
+def add_media(post_id, filename, media_type):
+    """Add a new media record for a post"""
+    conn = get_db_connection()
+    conn.execute('''
+        INSERT INTO media (post_id, filename, media_type)
+        VALUES (?, ?, ?)
+    ''', (post_id, filename, media_type))
+    conn.commit()
+    conn.close()
+
+
+def get_post_media(post_id):
+    """Get all media associated with a post"""
+    conn = get_db_connection()
+    media = conn.execute('''
+        SELECT * FROM media
+        WHERE post_id = ?
+        ORDER BY created_at
+    ''', (post_id,)).fetchall()
+    conn.close()
+    return media
+
+
+def delete_media(media_id):
+    """Delete a single media file and its database record"""
+    conn = get_db_connection()
+
+    # Get filename before deleting record
+    media = conn.execute('SELECT filename FROM media WHERE id = ?', (media_id,)).fetchone()
+
+    if media:
+        # Remove database record
+        conn.execute('DELETE FROM media WHERE id = ?', (media_id,))
+        conn.commit()
+
+        # Delete file from storage
+        file_path = os.path.join(UPLOAD_FOLDER, media['filename'])
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+    conn.close()
+
+
+# Script Initialization
 if __name__ == '__main__':
     print("Initializing database...")
     init_db()
