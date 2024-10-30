@@ -8,18 +8,19 @@
 
         {% if posts %}
             {% for post in posts %}
-                <article class="post-card">
-                    <h3>{{ post['title'] }}</h3>
-                    <p class="date">{{ post['created_at'] }}</p>
-                    <p class="preview">{{ post['content'][:200] }}...</p>
+                <div class="post-card">
+                    <a href="{{ url_for('view_post', post_id=post['id']) }}" class="post-content">
+                        <h3>{{ post['title'] }}</h3>
+                        <p class="date">{{ post['created_at'] }}</p>
+                        <p class="preview">{{ post['content'][:200] }}...</p>
+                    </a>
                     <div class="actions">
-                        <a href="{{ url_for('view_post', post_id=post['id']) }}" class="button">Read More</a>
                         <a href="{{ url_for('edit', post_id=post['id']) }}" class="button">Edit</a>
                         <a href="{{ url_for('delete', post_id=post['id']) }}"
                            class="button delete"
                            onclick="return confirm('Are you sure you want to delete this post?')">Delete</a>
                     </div>
-                </article>
+                </div>
             {% endfor %}
         {% else %}
             <p>No posts yet. Why not <a href="{{ url_for('create') }}">create one</a>?</p>
