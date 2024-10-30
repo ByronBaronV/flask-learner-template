@@ -91,6 +91,26 @@ def add_media(post_id, filename, media_type):
     conn.close()
 
 
+def delete_media(media_id):
+    """Delete a specific media file and its record"""
+    conn = get_db_connection()
+
+    # First get the filename to delete the actual file
+    media = conn.execute('SELECT filename FROM media WHERE id = ?', (media_id,)).fetchone()
+
+    if media:
+        # Delete the database record
+        conn.execute('DELETE FROM media WHERE id = ?', (media_id,))
+        conn.commit()
+
+        # Delete the actual file
+        file_path = os.path.join(UPLOAD_FOLDER, media['filename'])
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+    conn.close()
+
+
 def get_post_media(post_id):
     """Get all media files for a specific post"""
     conn = get_db_connection()

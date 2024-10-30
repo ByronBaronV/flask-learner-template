@@ -5,11 +5,19 @@
     box-sizing: border-box;
 }
 
+/* Base Styles */
 body {
     font-family: 'Arial', sans-serif;
     line-height: 1.6;
     color: #333;
     background-color: #f5f5f5;
+}
+
+/* Layout */
+main {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
 }
 
 /* Header & Navigation */
@@ -47,14 +55,106 @@ nav h1 a {
     background-color: #34495e;
 }
 
-/* Main Content */
-main {
-    max-width: 1200px;
-    margin: 2rem auto;
-    padding: 0 1rem;
+/* Button Styles */
+.button {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    text-align: center;
 }
 
-/* Post Cards */
+.button:hover {
+    background-color: #2980b9;
+}
+
+/* Reset button styles when using button element */
+button.button {
+    all: unset;
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s;
+    text-align: center;
+}
+
+.delete {
+    background-color: #e74c3c;
+}
+
+.delete:hover {
+    background-color: #c0392b;
+}
+
+/* Form Styles */
+.form-container {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #2c3e50;
+}
+
+input[type="text"],
+textarea {
+    width: 100%;
+    padding: 0.8rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-family: inherit;
+}
+
+textarea {
+    resize: vertical;
+}
+
+input[type="file"] {
+    display: block;
+    width: 100%;
+    padding: 0.5rem;
+    margin-bottom: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+}
+
+.form-text {
+    color: #666;
+    font-size: 0.8rem;
+    margin-top: 0.25rem;
+}
+
+.form-actions,
+.actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+/* Post Styles */
 .posts {
     display: grid;
     gap: 2rem;
@@ -73,18 +173,6 @@ main {
     margin-bottom: 0.5rem;
 }
 
-.date {
-    color: #666;
-    font-size: 0.9rem;
-    margin-bottom: 1rem;
-}
-
-.preview {
-    color: #444;
-    margin-bottom: 1rem;
-}
-
-/* Full Post View */
 .full-post {
     background: white;
     padding: 2rem;
@@ -95,6 +183,17 @@ main {
 .full-post .content {
     margin: 1.5rem 0;
     line-height: 1.8;
+}
+
+.date {
+    color: #666;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+.preview {
+    color: #444;
+    margin-bottom: 1rem;
 }
 
 /* Media Display */
@@ -126,7 +225,7 @@ video.post-media-item {
     background-color: black;
 }
 
-/* Thumbnails in Edit View */
+/* Current Media Display */
 .current-media {
     margin: 1rem 0;
     padding: 1rem;
@@ -140,11 +239,19 @@ video.post-media-item {
     color: #2c3e50;
 }
 
+.media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    padding: 1rem 0;
+}
+
 .media-item {
-    display: inline-block;
-    margin: 0.5rem;
-    max-width: 150px;
-    vertical-align: top;
+    position: relative;
+    background: #f5f5f5;
+    padding: 0.5rem;
+    border-radius: 4px;
+    text-align: center;
 }
 
 .thumbnail {
@@ -155,107 +262,13 @@ video.post-media-item {
     border: 1px solid #ddd;
 }
 
-/* File Input Styling */
-input[type="file"] {
-    display: block;
-    width: 100%;
-    padding: 0.5rem;
-    margin-bottom: 0.5rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    background-color: #fff;
+.media-actions {
+    margin-top: 0.5rem;
 }
 
-/* Forms */
-.form-container {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-    max-width: 800px;
-    margin: 0 auto;
-}
-
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-text {
-    color: #666;
+.media-actions .button.delete {
     font-size: 0.8rem;
-    margin-top: 0.25rem;
-}
-
-label {
-    display: block;
-    margin-bottom: 0.5rem;
-    color: #2c3e50;
-}
-
-input[type="text"],
-textarea {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-    font-family: inherit;
-}
-
-textarea {
-    resize: vertical;
-}
-
-/* Buttons and Actions */
-.actions {
-    display: flex;
-    gap: 1rem;
-    margin-top: 1rem;
-}
-
-/*
-   Shared button style for both <a> and <button> elements
-   to ensure consistent appearance and behavior across both.
-*/
-.button {
-    display: inline-block;
-    padding: 0.3rem 0.8rem; /* Adjusted padding for smaller height */
-    background-color: #3498db;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s;
-    text-align: center;
-}
-
-.button:hover {
-    background-color: #2980b9;
-}
-
-/* Remove default button styles */
-button.button {
-    all: unset;
-    display: inline-block;
-    padding: 0.3rem 0.8rem; /* Matching padding for consistency */
-    background-color: #3498db;
-    color: white;
-    text-decoration: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 1rem;
-    transition: background-color 0.3s;
-    text-align: center;
-}
-
-.delete {
-    background-color: #e74c3c;
-}
-
-.delete:hover {
-    background-color: #c0392b;
+    padding: 0.2rem 0.5rem;
 }
 
 /* Footer */
@@ -270,6 +283,7 @@ footer {
 
 /* Responsive Design */
 @media (max-width: 768px) {
+    /* Navigation */
     nav {
         flex-direction: column;
         text-align: center;
@@ -287,20 +301,22 @@ footer {
         display: block;
     }
 
-    .actions {
+    /* Buttons */
+    .actions,
+    .form-actions {
         flex-direction: column;
         gap: 0.5rem;
     }
 
-    /* Ensure consistent button width on mobile */
     .button,
-    button.button {
+    button.button,
+    .media-actions .button.delete {
         width: 100%;
         display: block;
-        box-sizing: border-box;
-        padding: 0.5rem 0.8rem; /* Slightly larger padding for touch targets */
+        padding: 0.5rem 0.8rem;
     }
 
+    /* Media */
     .post-media {
         grid-template-columns: 1fr;
     }
@@ -309,23 +325,12 @@ footer {
         max-height: 400px;
     }
 
-    .media-item {
-        max-width: 100px;
+    .media-grid {
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 0.5rem;
     }
 
     .thumbnail {
         height: 80px;
-    }
-
-    /* Ensure form buttons stack properly */
-    .form-actions {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
-    .form-actions .button,
-    .form-actions button.button {
-        width: 100%;
-        margin: 0;
     }
 }

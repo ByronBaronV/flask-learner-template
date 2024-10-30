@@ -42,6 +42,23 @@ def handle_media_upload(files, post_id):
             db.add_media(post_id, filename, media_type)
 
 
+@app.route('/delete-media/<int:media_id>')
+def delete_media(media_id):
+    """Handle media deletion"""
+    # Get the post_id before deleting the media to redirect back to edit page
+    conn = db.get_db_connection()
+    media = conn.execute('SELECT post_id FROM media WHERE id = ?', (media_id,)).fetchone()
+    conn.close()
+
+    if media:
+        post_id = media['post_id']
+        db.delete_media(media_id)
+        flash('Media deleted successfully')
+        return redirect(url_for('edit', post_id=post_id))
+
+    return redirect(url_for('home'))
+
+
 @app.route('/')
 def home():
     """Display all blog posts on the home page"""
