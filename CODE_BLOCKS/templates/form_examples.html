@@ -1,0 +1,128 @@
+{# Various form examples using Flask-WTF and basic HTML forms #}
+{% extends "base.html" %}
+
+{% block content %}
+    {# Basic Form Example #}
+    <form method="POST" action="{{ url_for('login') }}" class="form">
+        {# CSRF Protection #}
+        {{ form.csrf_token }}
+
+        {# Basic Text Input #}
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text"
+                   id="username"
+                   name="username"
+                   class="form-control {% if errors.username %}is-invalid{% endif %}"
+                   value="{{ request.form.username }}"
+                   required>
+            {% if errors.username %}
+                <div class="invalid-feedback">
+                    {{ errors.username }}
+                </div>
+            {% endif %}
+        </div>
+
+        {# Password Input #}
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password"
+                   id="password"
+                   name="password"
+                   class="form-control"
+                   required>
+        </div>
+
+        {# Checkbox Example #}
+        <div class="form-check">
+            <input type="checkbox"
+                   id="remember"
+                   name="remember"
+                   class="form-check-input"
+                   {% if request.form.remember %}checked{% endif %}>
+            <label class="form-check-label" for="remember">
+                Remember me
+            </label>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+
+    {# File Upload Form #}
+    <form method="POST"
+          action="{{ url_for('upload') }}"
+          enctype="multipart/form-data"
+          class="form">
+        <div class="form-group">
+            <label for="file">Choose File:</label>
+            <input type="file"
+                   id="file"
+                   name="file"
+                   class="form-control-file"
+                   accept="image/*"
+                   required>
+        </div>
+        <button type="submit" class="btn btn-primary">Upload</button>
+    </form>
+
+    {# Select Dropdown Example #}
+    <form method="POST" action="{{ url_for('preferences') }}" class="form">
+        <div class="form-group">
+            <label for="theme">Choose Theme:</label>
+            <select id="theme" name="theme" class="form-control">
+                {% for theme in themes %}
+                    <option value="{{ theme.id }}"
+                            {% if user_theme == theme.id %}selected{% endif %}>
+                        {{ theme.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        {# Multiple Select #}
+        <div class="form-group">
+            <label for="interests">Interests:</label>
+            <select multiple id="interests" name="interests" class="form-control">
+                {% for interest in interests %}
+                    <option value="{{ interest.id }}"
+                            {% if interest.id in user_interests %}selected{% endif %}>
+                        {{ interest.name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save Preferences</button>
+    </form>
+
+    {# Form With Radio Buttons #}
+    <form method="POST" action="{{ url_for('survey') }}" class="form">
+        <div class="form-group">
+            <p>How did you hear about us?</p>
+            {% for option in survey_options %}
+                <div class="form-check">
+                    <input type="radio"
+                           id="option_{{ option.id }}"
+                           name="survey_response"
+                           value="{{ option.id }}"
+                           class="form-check-input"
+                           {% if selected_option == option.id %}checked{% endif %}>
+                    <label class="form-check-label" for="option_{{ option.id }}">
+                        {{ option.text }}
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    {# Form With Error Handling #}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}

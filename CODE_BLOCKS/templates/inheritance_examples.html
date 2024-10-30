@@ -1,0 +1,73 @@
+{# Example of a base template that others can inherit from #}
+{% extends "base.html" %}
+
+{# Example of defining multiple blocks #}
+{% block title %}
+    Page Title - My Site
+{% endblock %}
+
+{% block head %}
+    {# Call parent block content first #}
+    {{ super() }}
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/specific-page.css') }}">
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        {# Example of a content block with a sidebar #}
+        <div class="row">
+            {% block sidebar %}
+                <div class="col-md-3">
+                    <nav class="sidebar">
+                        <ul class="nav flex-column">
+                            <li class="nav-item">
+                                <a href="{{ url_for('home') }}" class="nav-link">Home</a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="{{ url_for('about') }}" class="nav-link">About</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            {% endblock %}
+
+            {% block main_content %}
+                <div class="col-md-9">
+                    <h1>Welcome to the Site</h1>
+                    <p>This is the main content area.</p>
+
+                    {# Example of including another template #}
+                    {% include 'components/alert.html' %}
+
+                    {# Example of conditional blocks #}
+                    {% if user_authenticated %}
+                        {% block user_content %}
+                            <div class="user-section">
+                                <h2>Welcome back, {{ user.name }}!</h2>
+                                {% block user_dashboard %}
+                                {% endblock %}
+                            </div>
+                        {% endblock %}
+                    {% endif %}
+                </div>
+            {% endblock %}
+        </div>
+    </div>
+{% endblock %}
+
+{# Example of footer block #}
+{% block footer %}
+    <footer class="site-footer">
+        <div class="container">
+            {% block footer_content %}
+                <p>&copy; {{ current_year }} My Site</p>
+            {% endblock %}
+        </div>
+    </footer>
+{% endblock %}
+
+{# Example of scripts block #}
+{% block scripts %}
+    {{ super() }}  {# Include parent scripts #}
+    <script src="{{ url_for('static', filename='js/specific-page.js') }}"></script>
+{% endblock %}

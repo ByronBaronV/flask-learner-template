@@ -1,0 +1,85 @@
+{# Examples of Jinja2 macros for reusable template components #}
+
+{# Form Input Macro #}
+{% macro input_field(name, label, type='text', value='', required=false) %}
+    <div class="form-group">
+        <label for="{{ name }}">{{ label }}</label>
+        <input type="{{ type }}"
+               id="{{ name }}"
+               name="{{ name }}"
+               value="{{ value }}"
+               class="form-control"
+               {% if required %}required{% endif %}>
+    </div>
+{% endmacro %}
+
+{# Alert Message Macro #}
+{% macro alert(message, category='info') %}
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="close" data-dismiss="alert">
+            <span>&times;</span>
+        </button>
+    </div>
+{% endmacro %}
+
+{# Card Component Macro #}
+{% macro card(title, content, footer='') %}
+    <div class="card">
+        <div class="card-header">
+            {{ title }}
+        </div>
+        <div class="card-body">
+            {{ content }}
+        </div>
+        {% if footer %}
+            <div class="card-footer">
+                {{ footer }}
+            </div>
+        {% endif %}
+    </div>
+{% endmacro %}
+
+{# Navigation Item Macro #}
+{% macro nav_item(url, text, active=false) %}
+    <li class="nav-item">
+        <a class="nav-link {% if active %}active{% endif %}"
+           href="{{ url }}">
+            {{ text }}
+        </a>
+    </li>
+{% endmacro %}
+
+{# Example Usage #}
+{% extends "base.html" %}
+
+{% block content %}
+    {# Using the input field macro #}
+    <form method="POST">
+        {{ input_field('username', 'Username', required=true) }}
+        {{ input_field('email', 'Email Address', type='email', required=true) }}
+        {{ input_field('password', 'Password', type='password', required=true) }}
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+    {# Using the alert macro #}
+    {{ alert('Operation successful!', 'success') }}
+    {{ alert('Warning: Please check your input', 'warning') }}
+
+    {# Using the card macro #}
+    {{ card(
+        title='Welcome',
+        content='<p>Welcome to our site!</p>',
+        footer='<a href="#" class="btn btn-primary">Learn More</a>'
+    ) }}
+
+    {# Using the navigation macro #}
+    <nav>
+        <ul class="nav">
+            {{ nav_item(url_for('home'), 'Home', active=true) }}
+            {{ nav_item(url_for('about'), 'About') }}
+            {{ nav_item(url_for('contact'), 'Contact') }}
+        </ul>
+    </nav>
+{% endblock %}

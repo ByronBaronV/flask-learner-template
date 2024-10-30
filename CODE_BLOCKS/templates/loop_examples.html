@@ -1,0 +1,102 @@
+{# Examples of using loops and conditionals in templates #}
+{% extends "base.html" %}
+
+{% block content %}
+    {# Basic Loop Example #}
+    <div class="items-list">
+        <h2>Items</h2>
+        {% if items %}
+            <ul>
+                {% for item in items %}
+                    <li>{{ item.name }}</li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>No items found.</p>
+        {% endif %}
+    </div>
+
+    {# Loop with Access to Special Variables #}
+    <div class="numbered-list">
+        <h2>Numbered List</h2>
+        <ul>
+            {% for item in items %}
+                <li class="{% if loop.first %}first-item{% endif %}
+                           {% if loop.last %}last-item{% endif %}
+                           {% if loop.index is even %}even{% endif %}">
+                    {{ loop.index }}. {{ item.name }}
+                    {% if not loop.last %}<hr>{% endif %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {# Nested Loops Example #}
+    <div class="categories">
+        {% for category in categories %}
+            <div class="category">
+                <h3>{{ category.name }}</h3>
+                {% if category.items %}
+                    <ul>
+                        {% for item in category.items %}
+                            <li>
+                                {{ item.name }}
+                                {% if item.tags %}
+                                    <small>
+                                        {% for tag in item.tags %}
+                                            <span class="tag">{{ tag }}</span>
+                                        {% endfor %}
+                                    </small>
+                                {% endif %}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p>No items in this category.</p>
+                {% endif %}
+            </div>
+        {% endfor %}
+    </div>
+
+    {# Loop with Conditional Filtering #}
+    <div class="filtered-list">
+        <h2>Active Items</h2>
+        <ul>
+            {% for item in items if item.active %}
+                <li>{{ item.name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    {# Loop with Different Display Based on Index #}
+    <div class="grid">
+        {% for item in items %}
+            {% if loop.index0 % 3 == 0 %}
+                <div class="row">
+            {% endif %}
+
+            <div class="col-md-4">
+                {{ item.name }}
+            </div>
+
+            {% if loop.index % 3 == 0 or loop.last %}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+
+    {# Loop with Error Handling #}
+    {% for item in items %}
+        <div class="item">
+            {# Safe string handling #}
+            <h3>{{ item.name|escape }}</h3>
+
+            {# Default value if attribute is missing #}
+            <p>{{ item.description|default('No description available') }}</p>
+
+            {# Try/except equivalent #}
+            {% if item.price is defined %}
+                <p>Price: ${{ "%.2f"|format(item.price) }}</p>
+            {% endif %}
+        </div>
+    {% endfor %}
