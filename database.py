@@ -1,7 +1,7 @@
 import sqlite3
 from datetime import datetime
 import os
-
+# Muchas gracias Felipe
 # Configuration
 DATABASE_FILE = 'blog_database.db'
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
